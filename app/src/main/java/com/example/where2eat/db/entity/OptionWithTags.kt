@@ -9,7 +9,11 @@ data class OptionWithTags(
     @Relation(
         parentColumn = "id",
         entityColumn = "id",
-        associateBy = Junction(OptionTagCrossRef::class)
+        associateBy = Junction(
+            value = OptionTagCrossRef::class,
+            parentColumn = "option_id",
+            entityColumn = "tag_id"
+        )
     )
     val tags: List<Tag>
 )

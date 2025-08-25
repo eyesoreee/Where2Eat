@@ -1,6 +1,5 @@
 package com.example.where2eat.db.repo
 
-import com.example.where2eat.db.dao.OptionDao
 import com.example.where2eat.db.entity.Option
 import com.example.where2eat.db.entity.OptionWithTags
 
