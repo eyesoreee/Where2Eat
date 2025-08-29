@@ -31,7 +31,7 @@ class DeciderViewModel @Inject constructor(
 
             viewModelScope.launch {
                 val options = optionRepository.getOptionsWithTags(OptionFilter.Active)
-                val randomOption = options.random()
+                val randomOption = if (options.isNotEmpty()) options.random() else null
                 delay(1500L)
                 _state.update { it.copy(chosenOption = randomOption) }
                 _state.update { it.copy(isLoading = false) }
