@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Sort
+import androidx.compose.material.icons.filled.Archive
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FilterAlt
@@ -50,10 +51,12 @@ fun FilterSearchCard(
     onSortClick: () -> Unit = {},
     onFavoritesClick: () -> Unit = {},
     onOpenClick: () -> Unit = {},
+    onArchiveClick: () -> Unit = {},
     hasActiveFilters: Boolean = false,
     currentSortType: String = "Recent",
     favoritesActive: Boolean = false,
-    openActive: Boolean = false
+    openActive: Boolean = false,
+    archiveActive: Boolean = false
 ) {
     Card(
         modifier = modifier
@@ -279,6 +282,25 @@ fun FilterSearchCard(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Schedule,
+                                contentDescription = "Toggle open places filter",
+                            )
+                        }
+
+                        IconButton(
+                            onClick = onArchiveClick,
+                            colors = IconButtonDefaults.filledIconButtonColors(
+                                containerColor = if (archiveActive)
+                                    MaterialTheme.colorScheme.primary
+                                else
+                                    MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f),
+                                contentColor = if (archiveActive)
+                                    MaterialTheme.colorScheme.onPrimary
+                                else
+                                    MaterialTheme.colorScheme.primary
+                            )
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Archive,
                                 contentDescription = "Toggle open places filter",
                             )
                         }

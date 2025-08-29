@@ -319,6 +319,12 @@ fun OptionsScreen(viewModel: OptionsViewModel = hiltViewModel()) {
                                         viewModel.onAction(
                                             OptionsAction.ToggleFavorite(it.option)
                                         )
+                                    },
+                                    onArchive = {
+                                        viewModel.onAction(OptionsAction.ArchiveOption(it))
+                                    },
+                                    onDelete = {
+                                        viewModel.onAction(OptionsAction.DeleteOption(it))
                                     }
                                 )
                             }
@@ -394,6 +400,7 @@ fun OptionsScreen(viewModel: OptionsViewModel = hiltViewModel()) {
                     )
                 )
             },
+            onToggleShowArchived = { viewModel.onAction(OptionsAction.ToggleShowArchived(it)) },
             onClearFilters = { viewModel.onAction(OptionsAction.ClearAllFilters) }
         )
     }

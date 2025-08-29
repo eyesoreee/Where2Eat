@@ -33,7 +33,7 @@ class OptionsViewModel @Inject constructor(
     private fun loadData() {
         viewModelScope.launch {
             _state.update {
-                val allOptions = optionRepo.getOptionsWithTags(OptionFilter.Active)
+                val allOptions = optionRepo.getOptionsWithTags(OptionFilter.All)
                 it.copy(
                     allOptions = allOptions,
                     filteredOptions = applyFiltersAndSorting(
@@ -55,6 +55,7 @@ class OptionsViewModel @Inject constructor(
             is OptionsAction.DeleteOption -> deleteOption(action.option)
             is OptionsAction.UpdateOption -> updateOption(action.optionWithTags)
             is OptionsAction.ToggleFavorite -> toggleFavorite(action.option)
+            is OptionsAction.ArchiveOption -> archiveOption(action.option)
 
             // Filter and Search Actions
             is OptionsAction.UpdateSearchQuery -> updateSearchQuery(action.query)
@@ -68,6 +69,7 @@ class OptionsViewModel @Inject constructor(
             )
 
             is OptionsAction.TogglePriceRangeFilter -> togglePriceRangeFilter(action.priceRange)
+            is OptionsAction.ToggleShowArchived -> toggleShowArchived(action.showArchived)
             is OptionsAction.ClearAllFilters -> clearAllFilters()
         }
     }
@@ -196,6 +198,24 @@ class OptionsViewModel @Inject constructor(
         }
     }
 
+    private fun toggleShowArchived(showArchived: Boolean) {
+        _state.update { currentState ->
+            val newFilterState = currentState.filterState.copy(
+                showArchived = showArchived
+            )
+
+            currentState.copy(
+                filterState = newFilterState,
+                filteredOptions = applyFiltersAndSorting(
+                    currentState.allOptions,
+                    currentState.searchQuery,
+                    currentState.sortType,
+                    newFilterState
+                )
+            )
+        }
+    }
+
     private fun clearAllFilters() {
         _state.update { currentState ->
             val newFilterState = FilterState()
@@ -220,6 +240,9 @@ class OptionsViewModel @Inject constructor(
     ): List<OptionWithTags> {
         var filtered = options
 
+        if (!filterState.showArchived)
+            filtered = filtered.filter { it.option.archivedAt == null }
+
         if (searchQuery.isNotBlank())
             filtered = filtered.filter { optionWithTags ->
                 val option = optionWithTags.option
@@ -227,7 +250,6 @@ class OptionsViewModel @Inject constructor(
                         option.description?.contains(searchQuery, ignoreCase = true) == true ||
                         optionWithTags.tags.any { it.name.contains(searchQuery, ignoreCase = true) }
             }
-
 
         if (filterState.showFavoritesOnly)
             filtered = filtered.filter { it.option.isFavorite }
@@ -319,6 +341,20 @@ class OptionsViewModel @Inject constructor(
         try {
             viewModelScope.launch {
                 optionRepo.delete(option)
+                loadData()
+            }
+        } catch (e: Exception) {
+            _state.update { it.copy(error = e.message) }
+        }
+    }
+
+    private fun archiveOption(option: Option) {
+        try {
+            viewModelScope.launch {
+                val archivedAt = if (option.archivedAt != null) null
+                else System.currentTimeMillis()
+
+                optionRepo.update(option.copy(archivedAt = archivedAt))
                 loadData()
             }
         } catch (e: Exception) {

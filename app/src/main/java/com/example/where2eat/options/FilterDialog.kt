@@ -21,6 +21,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RangeSlider
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -44,6 +45,7 @@ fun FilterDialog(
     onTagToggle: (Int) -> Unit,
     onPriceRangeToggle: (String) -> Unit,
     onRatingFilterUpdate: (Float?, Float?) -> Unit,
+    onToggleShowArchived: (Boolean) -> Unit,
     onClearFilters: () -> Unit
 ) {
     var ratingRange by remember {
@@ -239,6 +241,35 @@ fun FilterDialog(
                                 )
                             }
                         }
+                    }
+                }
+
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+                    ),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Show Archived",
+                            style = MaterialTheme.typography.titleMedium.copy(
+                                fontWeight = FontWeight.SemiBold
+                            ),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+
+                        Switch(
+                            checked = filterState.showArchived,
+                            onCheckedChange = onToggleShowArchived
+                        )
                     }
                 }
             }

@@ -16,6 +16,7 @@ data class FilterState(
     val selectedTags: Set<Int> = emptySet(),
     val showFavoritesOnly: Boolean = false,
     val showOpenOnly: Boolean = false,
+    val showArchived: Boolean = false,
     val minRating: Float? = null,
     val maxRating: Float? = null,
     val selectedPriceRanges: Set<String> = emptySet()
